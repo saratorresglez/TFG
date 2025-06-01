@@ -1,0 +1,6 @@
+# virtual enviroment
+venv_tfg
+
+# csv files
+*.csv
+!input.csv
