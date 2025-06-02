@@ -1,0 +1,8 @@
+﻿Tipo de exploración;Tensión (kV);DFI (cm);numero de exploraciones anuales;ESAK (mGy);KAP (Gy.cm^2);Distancia a pared (m)
+Abdomen AP;80;115;224;3.54;2.16;1.15
+Columna lumbar AP;85;115;789;4.15;1.33;1.15
+Columna lumbar LAT;85;115;765;8.99;2.14;1.15
+Articulación lumbo-sacra;90;115;896;20.2;1.94;1.15
+Pelvis AP;85;115;546;3.06;1.9;1.15
+Columna torácica AP;80;115;898;3.11;0.75;1.15
+Columna torácica LAT;90;115;378;5.71;1.27;1.15
