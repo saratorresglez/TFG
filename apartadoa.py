@@ -1,17 +1,20 @@
-import os
 import pandas as pd
 import tkinter as tk
 from tkinter import simpledialog, messagebox
 
-# Crear ventana oculta para los diálogos
+# Crear ventana raíz casi invisible 
 root = tk.Tk()
-root.withdraw()
+root.title("Ventana Principal (invisible)")
+root.geometry("1x1+990+480")  
+root.update_idletasks()
+root.deiconify()  # Mostrar ventana (pero es casi invisible)
+
 
 # Función para pedir una distancia y validarla
 def pedir_distancia(etiqueta):
     while True:
         try:
-            valor = simpledialog.askstring("Entrada", f"Introduce la distancia {etiqueta} (en metros):")
+            valor = simpledialog.askstring("Entrada", f"Introduce la distancia {etiqueta} (en metros):", parent=root)
             if valor is None:
                 raise TypeError
             distancia = float(valor)
@@ -19,64 +22,84 @@ def pedir_distancia(etiqueta):
                 raise ValueError
             return distancia
         except (TypeError, ValueError):
-            messagebox.showerror("Error", f"Introduce un número válido y positivo para la distancia {etiqueta}.")
+            messagebox.showerror("Error", f"Introduce un número válido y positivo para la distancia {etiqueta}.", parent=root)
 
-# Pedir distancias para las 4 paredes
-d_pared1 = pedir_distancia("a la PARED 1")
-d_pared2 = pedir_distancia("a la PARED 2")
-d_pared3 = pedir_distancia("a la PARED 3")
-d_pared4 = pedir_distancia("a la PARED 4")
+# Pedir distancias BUCKY DE MESA
+messagebox.showinfo("Distancias", "Introduce las distancias para el BUCKY DE MESA", parent=root)
+d_pared1 = pedir_distancia("PARED 1 (bucky mesa)")
+d_pared2 = pedir_distancia("PARED 2 (bucky mesa)")
+d_pared3 = pedir_distancia("PARED 3 (bucky mesa)")
+d_pared4 = pedir_distancia("PARED 4 (bucky mesa)")
+d_techo = pedir_distancia("TECHO (bucky mesa)")
+d_suelo = pedir_distancia("SUELO (bucky mesa)")
 
-# Pedir distancias para techo y suelo
-d_techo = pedir_distancia("al TECHO")
-d_suelo = pedir_distancia("al SUELO")
+# Pedir distancias BUCKY DE PARED
+messagebox.showinfo("Distancias", "Introduce las distancias para el BUCKY DE PARED", parent=root)
+dp_pared_lateral1 = pedir_distancia("PARED LATERAL 1 (bucky pared)")
+dp_pared_lateral2 = pedir_distancia("PARED LATERAL 2 (bucky pared)")
+dp_techo = pedir_distancia("TECHO (bucky pared)")
+dp_suelo = pedir_distancia("SUELO (bucky pared)")
+dp_detras_tubo = pedir_distancia("PARED DETRÁS DEL TUBO")
+dp_detras_bucky = pedir_distancia("PARED DETRÁS DEL BUCKY DE PARED")
 
-# Borrar archivos antiguos si existen
-archivos_a_borrar = ["resultados_kap.csv", "analisis_por_tension.csv"]
-for archivo in archivos_a_borrar:
-    if os.path.exists(archivo):
-        os.remove(archivo)
+# Función principal
+def procesar_archivo(nombre_csv, es_bucky_pared=False):
+    df = pd.read_csv(nombre_csv, sep=";", encoding="utf-8")
+    df["KAP anual (Gy.cm^2)"] = df["KAP (Gy.cm^2)"] * df["numero de exploraciones anuales"]
 
-# Cargar datos del archivo CSV
-df = pd.read_csv("input.csv", sep=";", encoding="utf-8")
+    salida_kap = f"resultados_kap_{'pared' if es_bucky_pared else 'mesa'}.csv"
+    df[["Tipo de exploración", "KAP anual (Gy.cm^2)"]] = df[["Tipo de exploración", "KAP anual (Gy.cm^2)"]].round(3)
+    df[["Tipo de exploración", "KAP anual (Gy.cm^2)"]].to_csv(salida_kap, sep=";", index=False, encoding="utf-8")
 
-# Calcular KAP anual por tipo de exploración
-df["KAP anual (Gy.cm^2)"] = df["KAP (Gy.cm^2)"] * df["numero de exploraciones anuales"]
-df[["Tipo de exploración", "KAP anual (Gy.cm^2)"]].to_csv("resultados_kap.csv", sep=";", index=False, encoding="utf-8")
+    kap_por_tension = df.groupby("Tensión (kV)")["KAP anual (Gy.cm^2)"].sum().reset_index()
 
-# Agrupar por tensión y sumar KAP anual
-kap_por_tension = df.groupby("Tensión (kV)")["KAP anual (Gy.cm^2)"].sum().reset_index()
+    if not es_bucky_pared:
+        kap_por_tension["Smax_pared"] = 0.031 * kap_por_tension["Tensión (kV)"] + 2.5
+        kap_por_tension["Smax_techo"] = 0.058 * kap_por_tension["Tensión (kV)"] + 4.8
+        kap_por_tension["Smax_suelo"] = 0.011 * kap_por_tension["Tensión (kV)"] + 0.9
 
-# Calcular Smax para pared, techo y suelo
-kap_por_tension["Smax_pared (μGy/Gy.cm^2)"] = 0.031 * kap_por_tension["Tensión (kV)"] + 2.5
-kap_por_tension["Smax_techo (μGy/Gy.cm^2)"] = 0.058 * kap_por_tension["Tensión (kV)"] + 4.8
-kap_por_tension["Smax_suelo (μGy/Gy.cm^2)"] = 0.011 * kap_por_tension["Tensión (kV)"] + 0.9
+        kap_por_tension["Kerma_max_pared"] = kap_por_tension["Smax_pared"] * kap_por_tension["KAP anual (Gy.cm^2)"]
+        kap_por_tension["Kerma_max_techo"] = kap_por_tension["Smax_techo"] * kap_por_tension["KAP anual (Gy.cm^2)"]
+        kap_por_tension["Kerma_max_suelo"] = kap_por_tension["Smax_suelo"] * kap_por_tension["KAP anual (Gy.cm^2)"]
 
-# Calcular kerma dispersa máximo
-kap_por_tension["Kerma_max_pared (μGy/año)"] = kap_por_tension["Smax_pared (μGy/Gy.cm^2)"] * kap_por_tension["KAP anual (Gy.cm^2)"]
-kap_por_tension["Kerma_max_techo (μGy/año)"] = kap_por_tension["Smax_techo (μGy/Gy.cm^2)"] * kap_por_tension["KAP anual (Gy.cm^2)"]
-kap_por_tension["Kerma_max_suelo (μGy/año)"] = kap_por_tension["Smax_suelo (μGy/Gy.cm^2)"] * kap_por_tension["KAP anual (Gy.cm^2)"]
+        kap_por_tension["Kerma_corregido_pared1"] = kap_por_tension["Kerma_max_pared"] / d_pared1**2
+        kap_por_tension["Kerma_corregido_pared2"] = kap_por_tension["Kerma_max_pared"] / d_pared2**2
+        kap_por_tension["Kerma_corregido_pared3"] = kap_por_tension["Kerma_max_pared"] / d_pared3**2
+        kap_por_tension["Kerma_corregido_pared4"] = kap_por_tension["Kerma_max_pared"] / d_pared4**2
+        kap_por_tension["Kerma_corregido_techo"] = kap_por_tension["Kerma_max_techo"] / d_techo**2
+        kap_por_tension["Kerma_corregido_suelo"] = kap_por_tension["Kerma_max_suelo"] / d_suelo**2
 
-# Corregir kerma por la distancia para cada pared (1/d²)
-kap_por_tension["Kerma_corregido_pared1 (μGy/año)"] = kap_por_tension["Kerma_max_pared (μGy/año)"] / d_pared1**2
-kap_por_tension["Kerma_corregido_pared2 (μGy/año)"] = kap_por_tension["Kerma_max_pared (μGy/año)"] / d_pared2**2
-kap_por_tension["Kerma_corregido_pared3 (μGy/año)"] = kap_por_tension["Kerma_max_pared (μGy/año)"] / d_pared3**2
-kap_por_tension["Kerma_corregido_pared4 (μGy/año)"] = kap_por_tension["Kerma_max_pared (μGy/año)"] / d_pared4**2
+        kap_por_tension = kap_por_tension.round(3)
+        kap_por_tension.to_csv("analisis_por_tension_mesa.csv", sep=";", index=False, encoding="utf-8")
 
-# Corregir kerma para techo y suelo
-kap_por_tension["Kerma_corregido_techo (μGy/año)"] = kap_por_tension["Kerma_max_techo (μGy/año)"] / d_techo**2
-kap_por_tension["Kerma_corregido_suelo (μGy/año)"] = kap_por_tension["Kerma_max_suelo (μGy/año)"] / d_suelo**2
+    else:
+        # Smax adaptado
+        kap_por_tension["Smax_lateral"] = 0.031 * kap_por_tension["Tensión (kV)"] + 2.5
+        kap_por_tension["Smax_detras_tubo"] = 0.058 * kap_por_tension["Tensión (kV)"] + 4.8
+        kap_por_tension["Smax_detras_bucky"] = 0.011 * kap_por_tension["Tensión (kV)"] + 0.9
 
-# Guardar el resultado final
-kap_por_tension.to_csv("analisis_por_tension.csv", sep=";", index=False, encoding="utf-8")
+        kap_por_tension["Kerma_max_lateral"] = kap_por_tension["Smax_lateral"] * kap_por_tension["KAP anual (Gy.cm^2)"]
+        kap_por_tension["Kerma_max_detras_tubo"] = kap_por_tension["Smax_detras_tubo"] * kap_por_tension["KAP anual (Gy.cm^2)"]
+        kap_por_tension["Kerma_max_detras_bucky"] = kap_por_tension["Smax_detras_bucky"] * kap_por_tension["KAP anual (Gy.cm^2)"]
 
-# Mostrar mensaje de éxito con todas las distancias
-messagebox.showinfo("Proceso completado", (
-    "Cálculos finalizados correctamente.\n\n"
-    f"Distancia pared 1: {d_pared1} m\n"
-    f"Distancia pared 2: {d_pared2} m\n"
-    f"Distancia pared 3: {d_pared3} m\n"
-    f"Distancia pared 4: {d_pared4} m\n"
-    f"Distancia al techo: {d_techo} m\n"
-    f"Distancia al suelo: {d_suelo} m"
-))
+        kap_por_tension["Kerma_corregido_lateral1"] = kap_por_tension["Kerma_max_lateral"] / dp_pared_lateral1**2
+        kap_por_tension["Kerma_corregido_lateral2"] = kap_por_tension["Kerma_max_lateral"] / dp_pared_lateral2**2
+        kap_por_tension["Kerma_corregido_techo"] = kap_por_tension["Kerma_max_lateral"] / dp_techo**2
+        kap_por_tension["Kerma_corregido_suelo"] = kap_por_tension["Kerma_max_lateral"] / dp_suelo**2
+        kap_por_tension["Kerma_corregido_detras_tubo"] = kap_por_tension["Kerma_max_detras_tubo"] / dp_detras_tubo**2
+        kap_por_tension["Kerma_corregido_detras_bucky"] = kap_por_tension["Kerma_max_detras_bucky"] / dp_detras_bucky**2
+
+        kap_por_tension = kap_por_tension.round(3)
+        kap_por_tension.to_csv("analisis_por_tension_pared.csv", sep=";", index=False, encoding="utf-8")
+        
+
+# Ejecutar cálculos para ambos archivos
+procesar_archivo("input.csv", es_bucky_pared=False)
+procesar_archivo("input_pared.csv", es_bucky_pared=True)
+
+# Confirmación final
+messagebox.showinfo("Proceso completado", "Los cálculos para ambos buckys se han completado correctamente y los archivos han sido generados.", parent=root)
+
+
+# Cerrar ventana raíz al finalizar
+root.destroy()
