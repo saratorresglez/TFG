@@ -1,30 +1,4 @@
-me puedes hacer un readme de esto para subir a github
-Edit
 
-He creado un README completo y profesional para tu proyecto de calculadora de blindaje radiológico. El documento incluye:
-Características principales del README:
-
-    Descripción clara del propósito y funcionalidad
-    Instrucciones de instalación y requisitos
-    Formato detallado de los archivos de entrada
-    Explicación del proceso de cálculo paso a paso
-    Criterios de protección radiológica implementados
-    Metodología técnica utilizada
-    Limitaciones del software
-    Guías de contribución para otros desarrolladores
-
-Estructura profesional:
-
-✅ Emojis para mejor legibilidad
-✅ Secciones bien organizadas
-✅ Ejemplos de formato de archivos
-✅ Información técnica relevante
-✅ Contacto y soporte
-✅ Referencias normativas
-
-El README está diseñado para que cualquier usuario pueda entender rápidamente qué hace el software, cómo instalarlo y usarlo, y qué resultados esperar. También incluye la información técnica necesaria para desarrolladores que quieran contribuir al proyecto.
-
-¿Te gustaría que modifique alguna sección específica o agregue información adicional?
 
 # TFG
 Este proyecto es un programa en Python que calcula el kerma en aire por radiación dispersa para una sala de radiografía general.
