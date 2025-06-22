@@ -1,0 +1,11 @@
+Tipo de exploración;Tensión (kV);DFI (cm);numero de exploraciones anuales;KAP (Gy.cm^2)
+Torax PA;110;180;6783;0.2
+Torax LAT;125;180;2312;0.5
+Parrilla costal;75;180;5654;0.9
+Columna cervical AP;70;100;2342;1.2
+Columna cervical LAT;85;150;1234;0.4
+Senos paranasales;75;100;3554;0.8
+Huesos propios de la nariz AP;90;100;6775;0.3
+Huesos propios de la nariz LAT;65;100;4564;0.9
+Desfiladero subacromial AP;66;100;2234;0.7
+Hombro AP oblicuo;70;100;1214;1.1
