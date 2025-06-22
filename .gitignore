@@ -4,3 +4,5 @@ venv_tfg
 # csv files
 *.csv
 !input.csv
+!input_pared.csv
+!coeficientes.csv
