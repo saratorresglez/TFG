@@ -30,21 +30,21 @@ def pedir_distancia(etiqueta):
 
 # Pedir distancias BUCKY DE MESA
 messagebox.showinfo("Distancias", "Introduce las distancias para el BUCKY DE MESA", parent=root)
-d_pared1 = pedir_distancia("PARED 1 (bucky mesa)")
-d_pared2 = pedir_distancia("PARED 2 (bucky mesa)")
-d_pared3 = pedir_distancia("PARED 3 (bucky mesa)")
-d_pared4 = pedir_distancia("PARED 4 (bucky mesa)")
+d_pared1 = pedir_distancia("del bucky de mesa a la pared 1")
+d_pared4 = pedir_distancia("del bucky de mesa a la pared 2 (detrás bucky pared)")
+d_pared3 = pedir_distancia("del bucky de mesa a la pared 3")
+d_pared2 = pedir_distancia("del bucky de mesa a la pared 4 (detrás del tubo)")
 d_techo = pedir_distancia("TECHO (bucky mesa)")
 d_suelo = pedir_distancia("SUELO (bucky mesa)")
 
 # Pedir distancias BUCKY DE PARED
 messagebox.showinfo("Distancias", "Introduce las distancias para el BUCKY DE PARED", parent=root)
-dp_pared_lateral1 = pedir_distancia("PARED LATERAL 1 (bucky pared)")
-dp_pared_lateral2 = pedir_distancia("PARED LATERAL 2 (bucky pared)")
+dp_pared_lateral1 = pedir_distancia("del bucky de pared a la pared 1")
+dp_pared_lateral2 = pedir_distancia("del bucky de pared a la pared 3")
 dp_techo = pedir_distancia("TECHO (bucky pared)")
 dp_suelo = pedir_distancia("SUELO (bucky pared)")
-dp_detras_tubo = pedir_distancia("PARED DETRÁS DEL TUBO")
-dp_detras_bucky = pedir_distancia("PARED DETRÁS DEL BUCKY DE PARED")
+dp_detras_tubo = pedir_distancia("del bucky de pared a la pared 4 (detrás del tubo)")
+dp_detras_bucky = pedir_distancia("del bucky de pared a la pared 2 (detrás bucky pared)")
 
 # Función principal apartado a
 def procesar_archivo(nombre_csv, es_bucky_pared=False):
@@ -773,8 +773,4 @@ def crear_csv_final():
     return df_final
 
 crear_csv_final()
-
-# Cerrar ventana raíz al finalizar
 root.destroy()
-
-
