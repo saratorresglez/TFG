@@ -31,9 +31,9 @@ def pedir_distancia(etiqueta):
 # Pedir distancias BUCKY DE MESA
 messagebox.showinfo("Distancias", "Introduce las distancias para el BUCKY DE MESA", parent=root)
 d_pared1 = pedir_distancia("del bucky de mesa a la pared 1")
-d_pared4 = pedir_distancia("del bucky de mesa a la pared 2 (detrás bucky pared)")
+d_pared2 = pedir_distancia("del bucky de mesa a la pared 2 (detrás bucky pared)")
 d_pared3 = pedir_distancia("del bucky de mesa a la pared 3")
-d_pared2 = pedir_distancia("del bucky de mesa a la pared 4 (detrás del tubo)")
+d_pared4 = pedir_distancia("del bucky de mesa a la pared 4 (detrás del tubo)")
 d_techo = pedir_distancia("TECHO (bucky mesa)")
 d_suelo = pedir_distancia("SUELO (bucky mesa)")
 
