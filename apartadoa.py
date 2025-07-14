@@ -562,7 +562,7 @@ def preguntar_densidad():
              if barrera == "Techo" or barrera == "Suelo":
                  
                  try:
-                     valor_densidad = simpledialog.askstring("Densidad del hormigón", f"Introduce la densidad para {barrera}")    
+                     valor_densidad = simpledialog.askstring("Densidad del hormigón", f"Introduce la densidad para {barrera} (g/cm3)")    
                      if valor_densidad is None:
                          raise TypeError
                      densidad = float(valor_densidad)
@@ -603,7 +603,7 @@ def preguntar_espesor_real():
              if barrera == "Techo" or barrera == "Suelo":
                  
                  try:
-                     valor_espesor_real = simpledialog.askstring("Espesor real", f"Introduce el espesor real para {barrera}")    
+                     valor_espesor_real = simpledialog.askstring("Espesor real", f"Introduce el espesor real para {barrera} (cm)")    
                      if valor_espesor_real is None:
                          raise TypeError
                      espesor_real = float(valor_espesor_real)
@@ -732,15 +732,15 @@ def crear_csv_final():
                 })
         
         elif barrera in ['Techo', 'Suelo']:
-            # Para techo y suelo: lógica más compleja
+            # Para techo y suelo
             fila_hormigon = datos_barrera[datos_barrera['Material'] == 'hormigon']
             fila_plomo = datos_barrera[datos_barrera['Material'] == 'plomo']
             
             if not fila_hormigon.empty:
                 espesor_real_corregido = fila_hormigon.iloc[0]['Espesor real corregido']
-                espesor_mm_hormigon = fila_hormigon.iloc[0]['Espesor_mm']
+                espesor_cm_hormigon = fila_hormigon.iloc[0]['Espesor_cm']
                 
-                if espesor_real_corregido > espesor_mm_hormigon:
+                if espesor_real_corregido > espesor_cm_hormigon:
                     # Usar hormigón con espesor real corregido
                     filas_finales.append({
                         'Barrera': barrera,
